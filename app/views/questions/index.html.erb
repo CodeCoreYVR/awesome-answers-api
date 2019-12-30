@@ -1,0 +1,16 @@
+<h1>All Questions</h1>
+<% if @tag.present? %>
+  <h6>
+    Showing questions tagged by
+    <span class="badge badge-pill badge-primary">
+      <%= @tag.name %>
+    </span>
+  </h6>
+<% end %>
+<% @questions.each do |question| %>
+  <div>
+    <h2><%= link_to question.title, question_path(question) %></h2>
+    <p><%= question.body %></p>
+    <hr>
+  </div>
+<% end %>

@@ -1,0 +1,102 @@
+<h1><%= @question.title %></h1>
+<%= image_tag @question.image.variant(resize: '500X500') if @question.image.attached? %>
+
+<p><%= @question.body %></p>
+<p><%= @question.created_at %></p>
+<p>
+  Created by: <%= @question.user&.full_name || 'DELETED'  %>
+</p>
+
+<!-- <p>
+  Tags:
+  <%#= @question.tags.map{ |tag| tag.name }.join(", ") %>
+  <%#= @question.tags.map(&:name).join(", ") %>
+</p> -->
+<div>
+  <% @question.tags.each do |tag| %>
+    <%= link_to(
+      tag.name,
+      questions_path(tag: tag.name),
+      class: "badge badge-pill badge-primary"
+    ) %>
+  <% end %>
+</div>
+
+<% if @question.draft? && can?(:publish, @question)%>
+  <%= link_to "Publish", question_publishings_path(@question), method: :post, class: "btn btn-primary btn-sm" %>
+<% end %>
+
+<div><%= @question.likes.count %></div>
+<% like = @question.likes.find_by(user: current_user) %>
+<% if like.present? %>
+  <%= link_to "Un-like", question_like_path(@question, like), method: :delete%>
+<% else %>
+  <%= link_to "Like", question_likes_path(@question), method: :post%>
+<% end %>
+
+<% if can? :crud, @question %>
+  <%= link_to "Edit", edit_question_path(@question)%>
+  <%= link_to "Delete", question_path(@question), method: :delete, data: {confirm: "Are you sure?"} %>
+<% end %>
+<hr />
+<%#
+To create a form for a resource (i.e. a model), use the form_with
+helper instead of the form_tag. Its usual arguments are:
+- A named arg. model which is assigned an instance of a model
+(e.g. a new question)
+- A named arg. local which will prevent the form from submitting
+its data using AJAX.
+- A block that is passed the form object wherein we build
+the HTML inside the form (e.g. labels, inputs, submission buttons, etc)
+All data from the input fields a form built with this will have its
+name-value nested in a hash named after the class of the passed in model.
+(e.g. <input name="question[title]"> => { "question": { "title": "What?" } })
+%>
+<%= form_with(model: [@question, @answer], local: true) do |f| %>
+<% if @answer.errors.any? %>
+  <ul>
+    <% @answer.errors.full_messages.each do |msg|%>
+      <li><%= msg %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<div class="form-group">
+  <%= f.text_area(
+  :body,
+  cols: 50,
+  rows: 5,
+  placeholder: "What are your thoughts?",
+  class: "form-control"
+  ) %>
+</div>
+<%= f.submit "Answer" %>
+<% end %>
+
+<hr />
+
+<ul class="answer-list">
+  <% @answers.each do |answer| %>
+    <li>
+      <p>
+        <%= answer.body %> <br />
+        <% if can? :crud, answer %>
+        <small>
+          <%= link_to(
+            "Delete",
+            question_answer_path(@question, answer),
+            method: :delete,
+            data: {
+              confirm: "Are you sure?"
+            }
+          ) %>
+        </small>
+        |
+        <% end %>
+        <small>
+          Answered <%= time_ago_in_words(answer.created_at) %> ago
+        </small>
+      </p>
+    </li>
+  <% end %>
+</ul>

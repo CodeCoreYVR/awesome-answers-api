@@ -1,0 +1,32 @@
+<!--
+  Eail content can't contain CSS files or Javascript files
+  Javascript will not be executed. However, you can still
+  write CSS as long as it's contained inside a <style> tag
+  or it's written as inline styles. HTML/CSS support
+  varies greatly across the great sea of mail clients. You
+  are limited in the features you can use.
+  https://www.campaignmonitor.com/css/
+ -->
+
+
+<h2>Hi, <%= @question_owner.full_name %></h2>
+
+<p>
+  <%= @answer.user.full_name %> answered your question titled: <br />
+  <q><%= @question.title %></q>
+</p>
+
+<p>
+  The answer is: <br />
+  <q><%= @answer.body %></q>
+</p>
+
+<%= link_to(
+  "Click here to view your question",
+  question_url(@question)
+) %>
+
+<p>
+  Cheers, <br />
+  Awesome Answers Team
+</p>

@@ -1,0 +1,15 @@
+Hi, <%= @question_owner.full_name %>
+
+  <%= @answer.user.full_name %> answered your question titled: <br />
+  "<%= @question.title %>"
+
+  The answer is: <br />
+  "<%= @answer.body %>"
+
+Find your question at: <%= link_to(
+  "Click here to view your question",
+  question_url(@question)
+) %>
+
+  Cheers,
+  Awesome Answers Team

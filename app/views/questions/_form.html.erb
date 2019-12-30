@@ -1,0 +1,66 @@
+<%#
+  To create a form for a resource (i.e. a model), use
+  the form_wth helper instead of formm_tag. Its usual
+  arguments are:
+  - A named argument 'model' which is assigned an
+  instance of a model (i.e. a new question)
+  - A named argument 'local', which will prevent
+  the form from submitting its data using AJAX.
+  - A block that is passed the form object, where
+   we build the HTML inside the form (i.e. labels,
+   inputs, submission buttons, etc.)
+    All data from the input fields a form built with this will have its name-value nested in a hash named
+   after the class of the passed in model
+   (e.g. <input type="text" name="question[title]" id="question_title"> => { "question": { "title": "What?"} })
+%>
+
+<% if @question.errors.any? %>
+  <ul>
+    <% @question.errors.full_messages.each do |msg|%>
+      <li><%= msg %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<%# https://guides.rubyonrails.org/form_helpers.html %>
+<%= form_for @question do |f| %>
+  <div>
+    <%= f.label :title %>
+    <%= f.text_field :title %>
+  </div>
+  <div>
+    <%= f.label :body %>
+    <%= f.text_field :body %>
+  </div>
+  <div>
+    <%= f.label :tag_names %>
+    <%= f.text_field :tag_names %>
+  </div>
+  <div>
+    <%= f.file_field :image %>
+  </div>
+  <%= f.submit class: "btn btn-primary" %>
+<% end %>
+
+<script>
+  // Documentation for selectize.js:
+  // https://selectize.github.io/selectize.js/
+
+  // For a description of options that are useable
+  // go to:
+  // https://github.com/selectize/selectize.js/blob/master/docs/usage.md
+
+  $("#question_tag_names").selectize({
+    delimiter: ',',
+    persist: false,
+    labelField: "name",
+    valueField: "name",
+    searchField: "name",
+    options: <%= Tag.select(:name).to_json(except: [:id]).html_safe %>,
+    create (input) {
+      return {
+        name: input
+      }
+    }
+  });
+</script>
